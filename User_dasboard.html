@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Similar mobile menu styles as above */
+        /* Mobile responsiveness */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -17,6 +17,49 @@
             .stats-grid {
                 grid-template-columns: repeat(1, minmax(0, 1fr));
             }
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
         }
     </style>
 </head>
@@ -35,50 +78,50 @@
             <nav class="p-4">
                 <ul class="space-y-2">
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg bg-blue-700">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg bg-blue-700" onclick="openModal('dashboardModal')">
                             <i class="fas fa-home w-6"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('requestHelpModal')">
                             <i class="fas fa-plus-circle w-6"></i>
                             <span>Request Help</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#req" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="#req" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('myRequestsModal')">
                             <i class="fas fa-tasks w-6"></i>
                             <span>My Requests</span>
                             <span class="ml-auto bg-blue-600 text-xs px-2 py-1 rounded-full">3</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('chatModal')">
                             <i class="fas fa-comments w-6"></i>
                             <span>Chat</span>
                             <span class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">2</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('historyModal')">
                             <i class="fas fa-history w-6"></i>
                             <span>History</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('profileModal')">
                             <i class="fas fa-user w-6"></i>
                             <span>Profile</span>
                         </a>
                     </li>
                     <li class="pt-4 mt-4 border-t border-blue-700">
-                        <a href="main.html" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="main.html" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('backToMainModal')">
                             <i class="fa-solid fa-arrow-left"></i><span>Back-To-Main</span>
                         </a>
                     </li>
                     <li class="pt-4 mt-4 border-t border-blue-700">
-                        <a href="login.html" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700">
+                        <a href="login.html" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700" onclick="openModal('logoutModal')">
                             <i class="fas fa-sign-out-alt w-6"></i>
                             <span>Log Out</span>
                         </a>
@@ -94,13 +137,13 @@
                 <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
-                        <button class="text-gray-600 hover:text-gray-800">
+                        <button class="text-gray-600 hover:text-gray-800" onclick="openModal('notificationsModal')">
                             <i class="fas fa-bell text-xl"></i>
                             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
                         </button>
                     </div>
                     <div class="relative">
-                        <button class="text-gray-600 hover:text-gray-800">
+                        <button class="text-gray-600 hover:text-gray-800" onclick="openModal('messagesModal')">
                             <i class="fas fa-envelope text-xl"></i>
                             <span class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">1</span>
                         </button>
@@ -148,10 +191,10 @@
                 </div>
 
                 <!-- Active Requests -->
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8" id="#req">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8" id="req">
                     <div class="p-4 border-b flex justify-between items-center">
                         <h2 class="text-xl font-bold text-gray-800">Active Requests</h2>
-                        <button class="text-blue-600 hover:text-blue-800 font-medium">View All</button>
+                        <button class="text-blue-600 hover:text-blue-800 font-medium" onclick="openModal('viewAllRequestsModal')">View All</button>
                     </div>
                     <div class="divide-y">
                         <!-- Request 1 -->
@@ -183,10 +226,10 @@
                                 </div>
                             </div>
                             <div class="mt-3 flex space-x-2">
-                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700" onclick="openModal('chatModal')">
                                     <i class="fas fa-comment mr-1"></i> Chat
                                 </button>
-                                <button class="bg-gray-100 text-gray-800 px-3 py-1 rounded text-sm hover:bg-gray-200">
+                                <button class="bg-gray-100 text-gray-800 px-3 py-1 rounded text-sm hover:bg-gray-200" onclick="openModal('requestDetailsModal')">
                                     <i class="fas fa-eye mr-1"></i> View Details
                                 </button>
                             </div>
@@ -208,10 +251,10 @@
                                 </div>
                             </div>
                             <div class="mt-3 flex space-x-2">
-                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700" onclick="openModal('editRequestModal')">
                                     <i class="fas fa-edit mr-1"></i> Edit Request
                                 </button>
-                                <button class="bg-red-100 text-red-800 px-3 py-1 rounded text-sm hover:bg-red-200">
+                                <button class="bg-red-100 text-red-800 px-3 py-1 rounded text-sm hover:bg-red-200" onclick="openModal('cancelRequestModal')">
                                     <i class="fas fa-times mr-1"></i> Cancel
                                 </button>
                             </div>
@@ -244,7 +287,7 @@
                                             <i class="fas fa-star-half-alt"></i>
                                         </span>
                                     </div>
-                                    <button class="mt-2 text-blue-600 text-sm hover:underline">View Details</button>
+                                    <button class="mt-2 text-blue-600 text-sm hover:underline" onclick="openModal('completedRequestModal')">View Details</button>
                                 </div>
                             </div>
                         </div>
@@ -260,7 +303,7 @@
                                         <img src="https://via.placeholder.com/40" alt="Volunteer" class="w-6 h-6 rounded-full mr-2">
                                         <span>Ramesh K. will assist you</span>
                                     </div>
-                                    <button class="mt-2 text-blue-600 text-sm hover:underline">Chat Now</button>
+                                    <button class="mt-2 text-blue-600 text-sm hover:underline" onclick="openModal('chatModal')">Chat Now</button>
                                 </div>
                             </div>
                         </div>
@@ -269,5 +312,358 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal Templates -->
+    <!-- Dashboard Modal -->
+    <div id="dashboardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Dashboard</h3>
+                <span class="close" onclick="closeModal('dashboardModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>The dashboard provides an overview of your activity on Civic Help Hub, including:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Active requests and their status</li>
+                    <li>Completed requests history</li>
+                    <li>Reward points earned</li>
+                    <li>Recent notifications and activities</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('dashboardModal')">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Request Help Modal -->
+    <div id="requestHelpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Request Help</h3>
+                <span class="close" onclick="closeModal('requestHelpModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>This section allows you to request assistance with various civic services:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Submit new requests for help with government forms and processes</li>
+                    <li>Select from common service categories (passport, ID cards, tax filing, etc.)</li>
+                    <li>Upload necessary documents</li>
+                    <li>Specify your preferred timeline for assistance</li>
+                </ul>
+                <div class="mt-4 p-3 bg-blue-50 rounded">
+                    <p class="font-medium">Example services you can request help with:</p>
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <span class="bg-white p-2 rounded text-sm">Passport Application</span>
+                        <span class="bg-white p-2 rounded text-sm">ID Card Renewal</span>
+                        <span class="bg-white p-2 rounded text-sm">Tax Filing</span>
+                        <span class="bg-white p-2 rounded text-sm">License Application</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mr-2" onclick="closeModal('requestHelpModal')">Cancel</button>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('requestHelpModal')">Create New Request</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- My Requests Modal -->
+    <div id="myRequestsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">My Requests</h3>
+                <span class="close" onclick="closeModal('myRequestsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>This section shows all your current and past requests for assistance:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>View status of all your active requests</li>
+                    <li>Check progress of each request with visual indicators</li>
+                    <li>Access completed request history</li>
+                    <li>Communicate with assigned volunteers</li>
+                    <li>Edit or cancel pending requests</li>
+                </ul>
+                <div class="mt-4 p-3 bg-yellow-50 rounded">
+                    <p class="font-medium">You currently have 3 active requests:</p>
+                    <div class="mt-2 space-y-2">
+                        <div class="flex justify-between items-center p-2 bg-white rounded">
+                            <span>Smart Card Application</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">In Progress</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-white rounded">
+                            <span>Passport Renewal</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Pending</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-white rounded">
+                            <span>Property Tax Payment</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('myRequestsModal')">View All Requests</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Chat</h3>
+                <span class="close" onclick="closeModal('chatModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>The chat feature allows you to communicate directly with volunteers assisting with your requests:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Real-time messaging with your assigned volunteers</li>
+                    <li>Share documents and images securely</li>
+                    <li>Get updates on your request progress</li>
+                    <li>Clarify questions about required documents</li>
+                </ul>
+                <div class="mt-4 p-3 bg-blue-50 rounded">
+                    <p class="font-medium">You have 2 unread messages:</p>
+                    <div class="mt-2 space-y-2">
+                        <div class="p-2 bg-white rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">Ramesh K.</p>
+                                <p class="text-sm text-gray-600">I need one more document for your...</p>
+                            </div>
+                            <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">2</span>
+                        </div>
+                        <div class="p-2 bg-white rounded">
+                            <p class="font-medium">Priya M.</p>
+                            <p class="text-sm text-gray-600">Your application has been submitted...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('chatModal')">Open Chat</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- History Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">History</h3>
+                <span class="close" onclick="closeModal('historyModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>The History section provides a complete record of all your past interactions with Civic Help Hub:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>View all completed requests with details</li>
+                    <li>Access records of past communications</li>
+                    <li>Download completion certificates or receipts</li>
+                    <li>Rate and review volunteers who assisted you</li>
+                    <li>Track your reward points history</li>
+                </ul>
+                <div class="mt-4 p-3 bg-gray-50 rounded">
+                    <p class="font-medium">You have completed 12 requests to date:</p>
+                    <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+                        <span class="bg-white p-2 rounded">Property Tax (x3)</span>
+                        <span class="bg-white p-2 rounded">Passport (x2)</span>
+                        <span class="bg-white p-2 rounded">License (x2)</span>
+                        <span class="bg-white p-2 rounded">ID Cards (x5)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('historyModal')">View Full History</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Profile</h3>
+                <span class="close" onclick="closeModal('profileModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Manage your personal information and account settings:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Update your personal details and contact information</li>
+                    <li>Manage notification preferences</li>
+                    <li>Change password and security settings</li>
+                    <li>View and manage linked documents</li>
+                    <li>Set preferences for volunteer matching</li>
+                </ul>
+                <div class="mt-4 p-3 bg-blue-50 rounded">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-circle text-4xl text-blue-600"></i>
+                        <div>
+                            <p class="font-medium">Yuva</p>
+                            <p class="text-sm text-gray-600">yuva@example.com</p>
+                            <p class="text-sm text-gray-600">Member since: Jan 2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mr-2" onclick="closeModal('profileModal')">Cancel</button>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('profileModal')">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Main Modal -->
+    <div id="backToMainModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Back to Main Site</h3>
+                <span class="close" onclick="closeModal('backToMainModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Return to the main Civic Help Hub website where you can:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Learn more about our services</li>
+                    <li>Explore how the platform works</li>
+                    <li>Read testimonials from other users</li>
+                    <li>Find information about becoming a volunteer</li>
+                    <li>Access informational resources</li>
+                </ul>
+                <div class="mt-4 p-3 bg-yellow-50 rounded">
+                    <p class="font-medium">Any unsaved changes will be lost if you navigate away from this page.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mr-2" onclick="closeModal('backToMainModal')">Stay Here</button>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('backToMainModal')">Continue to Main Site</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Log Out</h3>
+                <span class="close" onclick="closeModal('logoutModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to log out of your Civic Help Hub account?</p>
+                <div class="mt-4 p-3 bg-blue-50 rounded">
+                    <p class="font-medium">You will need to log in again to:</p>
+                    <ul class="list-disc pl-5 mt-1 space-y-1">
+                        <li>Check the status of your requests</li>
+                        <li>Message your volunteers</li>
+                        <li>Submit new requests for assistance</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mr-2" onclick="closeModal('logoutModal')">Cancel</button>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('logoutModal')">Log Out</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional Modals for other buttons -->
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Notifications</h3>
+                <span class="close" onclick="closeModal('notificationsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>You have 3 unread notifications:</p>
+                <div class="mt-4 space-y-3">
+                    <div class="p-3 bg-blue-50 rounded">
+                        <p class="font-medium">New message from Ramesh</p>
+                        <p class="text-sm">Regarding your Smart Card application</p>
+                        <p class="text-xs text-gray-500">10 minutes ago</p>
+                    </div>
+                    <div class="p-3 bg-white border-l-4 border-green-500 rounded">
+                        <p class="font-medium">Request completed</p>
+                        <p class="text-sm">Your Property Tax payment was successful</p>
+                        <p class="text-xs text-gray-500">2 hours ago</p>
+                    </div>
+                    <div class="p-3 bg-white rounded">
+                        <p class="font-medium">Volunteer assigned</p>
+                        <p class="text-sm">Priya M. will assist with your Passport renewal</p>
+                        <p class="text-xs text-gray-500">1 day ago</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('notificationsModal')">Mark All as Read</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Messages Modal -->
+    <div id="messagesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">Messages</h3>
+                <span class="close" onclick="closeModal('messagesModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>You have 1 unread message:</p>
+                <div class="mt-4 p-3 bg-blue-50 rounded">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-envelope-open-text text-blue-600"></i>
+                            <div>
+                                <p class="font-medium">Civic Help Hub Support</p>
+                                <p class="text-sm">Welcome to Civic Help Hub! We're excited to...</p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-gray-500">3 days ago</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closeModal('messagesModal')">View All Messages</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Modal Functionality -->
+    <script>
+        // Function to open a modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+        }
+        
+        // Function to close a modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        }
+        
+        // Close modal when clicking outside of modal content
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+        
+        // Close modal with Escape key
+        document.onkeydown = function(evt) {
+            evt = evt || window.event;
+            if (evt.key === "Escape") {
+                const modals = document.getElementsByClassName('modal');
+                for (let i = 0; i < modals.length; i++) {
+                    if (modals[i].style.display === 'flex') {
+                        modals[i].style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                }
+            }
+        };
+    </script>
 </body>
 </html>

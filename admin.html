@@ -6,19 +6,113 @@
     <title>Admin Dashboard - Civic Help Hub</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-     <style>
-        /* Similar mobile menu styles as above */
+    <style>
+        /* Custom styles for sidebar and interactivity */
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        
         @media (max-width: 1024px) {
-            .grid-cols-2-lg {
-                grid-template-columns: 1fr;
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 50;
+                height: 100vh;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+            }
+            .overlay.active {
+                display: block;
             }
         }
+        
+        /* Chat window styles */
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            flex-direction: column;
+        }
+        .chat-window.active {
+            display: flex;
+        }
+        .chat-header {
+            background: #4f46e5;
+            color: white;
+            padding: 15px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+        }
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .message.sent {
+            align-items: flex-end;
+        }
+        .message.received {
+            align-items: flex-start;
+        }
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 70%;
+        }
+        .message.sent .message-content {
+            background: #4f46e5;
+            color: white;
+        }
+        .message.received .message-content {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .message-time {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        
+        /* Active navigation item */
+        .nav-item.active {
+            background-color: #3730a3;
+        }
+        
+        /* Stats grid responsiveness */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            .recent-table {
-                overflow-x: auto;
             }
         }
         @media (max-width: 480px) {
@@ -26,62 +120,175 @@
                 grid-template-columns: repeat(1, minmax(0, 1fr));
             }
         }
+        
+        /* Animation for verification actions */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; height: 0; padding: 0; margin: 0; }
+        }
+        .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .close-modal:hover {
+            color: #374151;
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.15s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: white;
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.15s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile menu button -->
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="menuToggle" class="p-2 bg-indigo-700 text-white rounded-md">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Overlay for mobile menu -->
+    <div id="overlay" class="overlay"></div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-indigo-800 text-white shadow-lg">
-            <div class="p-4 flex items-center space-x-2 border-b border-indigo-700">
-                <i class="fas fa-user-shield text-3xl"></i>
-                <div>
-                    <p class="font-bold">Admin User</p>
-                    <p class="text-xs text-indigo-200">Super Admin</p>
+        <div id="sidebar" class="sidebar w-64 bg-indigo-800 text-white shadow-lg">
+            <div class="p-4 flex items-center justify-between border-b border-indigo-700">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user-shield text-3xl"></i>
+                    <div>
+                        <p class="font-bold">Admin User</p>
+                        <p class="text-xs text-indigo-200">Super Admin</p>
+                    </div>
                 </div>
+                <button id="closeSidebar" class="lg:hidden text-white">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <nav class="p-4">
                 <ul class="space-y-2">
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg bg-indigo-700">
+                        <a href="#" class="nav-item active flex items-center space-x-2 p-2 rounded-lg bg-indigo-700">
                             <i class="fas fa-tachometer-alt w-6"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700">
+                        <a href="#" class="nav-link flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700" data-modal="userManagementModal">
                             <i class="fas fa-users w-6"></i>
                             <span>User Management</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700">
+                        <a href="#" class="nav-link flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700" data-modal="serviceHelpersModal">
                             <i class="fas fa-hands-helping w-6"></i>
                             <span>Service Helpers</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700">
+                        <a href="#" class="nav-link flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700" data-modal="taskManagementModal">
                             <i class="fas fa-tasks w-6"></i>
                             <span>Task Management</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700">
+                        <a href="#" class="nav-link flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700" data-modal="reportsModal">
                             <i class="fas fa-file-alt w-6"></i>
                             <span>Reports</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700">
+                        <a href="#" class="nav-link flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700" data-modal="settingsModal">
                             <i class="fas fa-cog w-6"></i>
                             <span>Settings</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700">
+                        <a href="#" class="nav-link flex items-center space-x-2 p-2 rounded-lg hover:bg-indigo-700" data-modal="verificationsModal">
                             <i class="fas fa-shield-alt w-6"></i>
                             <span>Verifications</span>
-                            <span class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">12</span>
+                            <span id="verificationCount" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">12</span>
                         </a>
                     </li>
                     <li class="pt-4 mt-4 border-t border-indigo-700">
@@ -101,11 +308,15 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
+        <div class="flex-1 overflow-auto lg:ml-0">
             <!-- Top Bar -->
             <div class="bg-white shadow-sm p-4 flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
                 <div class="flex items-center space-x-4">
+                    <button id="chatButton" class="text-gray-600 hover:text-gray-800 relative">
+                        <i class="fas fa-comment-dots text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
                     <div class="relative">
                         <button class="text-gray-600 hover:text-gray-800">
                             <i class="fas fa-bell text-xl"></i>
@@ -124,7 +335,7 @@
             <!-- Dashboard Content -->
             <div class="p-6">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
                         <div class="flex justify-between">
                             <div>
@@ -165,7 +376,7 @@
                         <div class="flex justify-between">
                             <div>
                                 <p class="text-gray-500">Pending Verifications</p>
-                                <h3 class="text-2xl font-bold">12</h3>
+                                <h3 id="pendingVerifications" class="text-2xl font-bold">12</h3>
                                 <p class="text-sm text-red-600"><i class="fas fa-exclamation-circle mr-1"></i> Needs attention</p>
                             </div>
                             <div class="text-yellow-500 text-3xl">
@@ -226,8 +437,8 @@
                             <h2 class="text-xl font-bold text-gray-800">Pending Verifications</h2>
                             <button class="text-indigo-600 hover:text-indigo-800 font-medium">View All</button>
                         </div>
-                        <div class="divide-y">
-                            <div class="p-4 hover:bg-gray-50">
+                        <div id="verificationsList" class="divide-y">
+                            <div class="p-4 hover:bg-gray-50 verification-item">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-bold">Karthik S.</h3>
@@ -238,16 +449,16 @@
                                         </div>
                                     </div>
                                     <div class="flex space-x-2">
-                                        <button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                        <button class="approve-btn bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
                                             <i class="fas fa-check mr-1"></i> Approve
                                         </button>
-                                        <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <button class="reject-btn bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                             <i class="fas fa-times mr-1"></i> Reject
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="p-4 hover:bg-gray-50">
+                            <div class="p-4 hover:bg-gray-50 verification-item">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-bold">Meena R.</h3>
@@ -258,16 +469,16 @@
                                         </div>
                                     </div>
                                     <div class="flex space-x-2">
-                                        <button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                        <button class="approve-btn bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
                                             <i class="fas fa-check mr-1"></i> Approve
                                         </button>
-                                        <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <button class="reject-btn bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                             <i class="fas fa-times mr-1"></i> Reject
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="p-4 hover:bg-gray-50">
+                            <div class="p-4 hover:bg-gray-50 verification-item">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-bold">Suresh P.</h3>
@@ -278,10 +489,10 @@
                                         </div>
                                     </div>
                                     <div class="flex space-x-2">
-                                        <button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                        <button class="approve-btn bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
                                             <i class="fas fa-check mr-1"></i> Approve
                                         </button>
-                                        <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <button class="reject-btn bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                             <i class="fas fa-times mr-1"></i> Reject
                                         </button>
                                     </div>
@@ -353,5 +564,469 @@
             </div>
         </div>
     </div>
+
+    <!-- Chat Window -->
+    <div id="chatWindow" class="chat-window">
+        <div class="chat-header">
+            <h3 class="font-bold">Support Chat</h3>
+            <button id="closeChat" class="text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages">
+            <div class="message received">
+                <div class="message-content">
+                    Hello! How can I help you today?
+                </div>
+                <span class="message-time">10:00 AM</span>
+            </div>
+            <div class="message sent">
+                <div class="message-content">
+                    I need help with a verification issue.
+                </div>
+                <span class="message-time">10:02 AM</span>
+            </div>
+            <div class="message received">
+                <div class="message-content">
+                    Sure, I'd be happy to help. Could you provide more details about the issue?
+                </div>
+                <span class="message-time">10:03 AM</span>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message..." class="flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded-r-lg hover:bg-indigo-700">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals for each navigation link -->
+    <!-- User Management Modal -->
+    <div id="userManagementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold text-gray-800">User Management</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Search Users</label>
+                    <input type="text" class="form-input" placeholder="Enter name or email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Filter by Role</label>
+                    <select class="form-select">
+                        <option value="">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                        <option value="helper">Service Helper</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Filter by Status</label>
+                    <select class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <button class="btn-primary w-full">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Helpers Modal -->
+    <div id="serviceHelpersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold text-gray-800">Service Helpers</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Add New Service Helper</label>
+                    <input type="text" class="form-input mb-2" placeholder="Full Name">
+                    <input type="email" class="form-input mb-2" placeholder="Email Address">
+                    <input type="tel" class="form-input mb-2" placeholder="Phone Number">
+                    <select class="form-select mb-2">
+                        <option value="">Select Service Category</option>
+                        <option value="tax">Tax Assistance</option>
+                        <option value="license">License Applications</option>
+                        <option value="document">Document Services</option>
+                    </select>
+                    <button class="btn-primary w-full">Add Helper</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Management Modal -->
+    <div id="taskManagementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold text-gray-800">Task Management</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Create New Task</label>
+                    <select class="form-select mb-2">
+                        <option value="">Select Task Type</option>
+                        <option value="tax">Tax Payment</option>
+                        <option value="license">License Renewal</option>
+                        <option value="document">Document Verification</option>
+                    </select>
+                    <input type="text" class="form-input mb-2" placeholder="Customer Name">
+                    <input type="text" class="form-input mb-2" placeholder="Customer Contact">
+                    <textarea class="form-input mb-2" placeholder="Task Details" rows="3"></textarea>
+                    <button class="btn-primary w-full">Create Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Modal -->
+    <div id="reportsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold text-gray-800">Reports</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Generate Report</label>
+                    <select class="form-select mb-2">
+                        <option value="">Select Report Type</option>
+                        <option value="user">User Activity Report</option>
+                        <option value="task">Task Completion Report</option>
+                        <option value="revenue">Revenue Report</option>
+                        <option value="performance">Performance Report</option>
+                    </select>
+                    <div class="flex space-x-2 mb-2">
+                        <input type="date" class="form-input" placeholder="Start Date">
+                        <input type="date" class="form-input" placeholder="End Date">
+                    </div>
+                    <button class="btn-primary w-full">Generate Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold text-gray-800">System Settings</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Notification Settings</label>
+                    <div class="flex items-center justify-between mb-2">
+                        <span>Email Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span>SMS Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">System Preferences</label>
+                    <select class="form-select mb-2">
+                        <option value="light">Light Theme</option>
+                        <option value="dark">Dark Theme</option>
+                        <option value="auto">Auto (System Preference)</option>
+                    </select>
+                    <select class="form-select mb-2">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                    </select>
+                </div>
+                <button class="btn-primary w-full">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verifications Modal -->
+    <div id="verificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-bold text-gray-800">Verifications</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Pending Verifications</label>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium">12 pending verifications</span>
+                            <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">Attention Needed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">You have verification requests that need your approval.</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Verification Settings</label>
+                    <div class="flex items-center justify-between mb-2">
+                        <span>Auto-approve verified users</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span>Email verification required</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+                <button class="btn-primary w-full">View All Verifications</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const closeSidebar = document.getElementById('closeSidebar');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            });
+            
+            closeSidebar.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // Navigation active state and modal handling
+            const navItems = document.querySelectorAll('.nav-item');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const modals = document.querySelectorAll('.modal');
+            const closeModalButtons = document.querySelectorAll('.close-modal');
+            
+            // Set Dashboard as active by default
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth < 1024) {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Handle navigation links with modals
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const modalId = this.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    
+                    // Close all modals first
+                    modals.forEach(m => m.classList.remove('active'));
+                    
+                    // Open the specific modal
+                    modal.classList.add('active');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth < 1024) {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Close modals when clicking on close button
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modals.forEach(modal => modal.classList.remove('active'));
+                });
+            });
+            
+            // Close modals when clicking outside
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Approve/Reject buttons
+            const approveButtons = document.querySelectorAll('.approve-btn');
+            const rejectButtons = document.querySelectorAll('.reject-btn');
+            const verificationCount = document.getElementById('verificationCount');
+            const pendingVerifications = document.getElementById('pendingVerifications');
+            const verificationsList = document.getElementById('verificationsList');
+            
+            function updateVerificationCount() {
+                const count = verificationsList.querySelectorAll('.verification-item').length;
+                verificationCount.textContent = count;
+                pendingVerifications.textContent = count;
+            }
+            
+            approveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const item = this.closest('.verification-item');
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium text-green-600">Application Approved</p>
+                                <p class="text-sm text-gray-500">This verification has been approved successfully</p>
+                            </div>
+                            <div class="text-green-500 text-2xl">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Remove the item after a delay
+                    setTimeout(() => {
+                        item.classList.add('fade-out');
+                        setTimeout(() => {
+                            item.remove();
+                            updateVerificationCount();
+                        }, 500);
+                    }, 1500);
+                });
+            });
+            
+            rejectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const item = this.closest('.verification-item');
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium text-red-600">Application Rejected</p>
+                                <p class="text-sm text-gray-500">This verification has been rejected</p>
+                            </div>
+                            <div class="text-red-500 text-2xl">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Remove the item after a delay
+                    setTimeout(() => {
+                        item.classList.add('fade-out');
+                        setTimeout(() => {
+                            item.remove();
+                            updateVerificationCount();
+                        }, 500);
+                    }, 1500);
+                });
+            });
+            
+            // Chat functionality
+            const chatButton = document.getElementById('chatButton');
+            const chatWindow = document.getElementById('chatWindow');
+            const closeChat = document.getElementById('closeChat');
+            
+            chatButton.addEventListener('click', function() {
+                chatWindow.classList.toggle('active');
+            });
+            
+            closeChat.addEventListener('click', function() {
+                chatWindow.classList.remove('active');
+            });
+            
+            // Send message functionality
+            const chatInput = document.querySelector('.chat-input input');
+            const chatSend = document.querySelector('.chat-input button');
+            
+            chatSend.addEventListener('click', function() {
+                if (chatInput.value.trim() !== '') {
+                    const messagesContainer = document.querySelector('.chat-messages');
+                    
+                    // Create new message
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'sent');
+                    
+                    const messageContent = document.createElement('div');
+                    messageContent.classList.add('message-content');
+                    messageContent.textContent = chatInput.value;
+                    
+                    const messageTime = document.createElement('span');
+                    messageTime.classList.add('message-time');
+                    
+                    // Get current time
+                    const now = new Date();
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    messageTime.textContent = `${hours}:${minutes}`;
+                    
+                    messageDiv.appendChild(messageContent);
+                    messageDiv.appendChild(messageTime);
+                    
+                    messagesContainer.appendChild(messageDiv);
+                    
+                    // Clear input
+                    chatInput.value = '';
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                    // Simulate reply after a delay
+                    setTimeout(() => {
+                        const replyDiv = document.createElement('div');
+                        replyDiv.classList.add('message', 'received');
+                        
+                        const replyContent = document.createElement('div');
+                        replyContent.classList.add('message-content');
+                        replyContent.textContent = 'Thanks for your message. We will look into this.';
+                        
+                        const replyTime = document.createElement('span');
+                        replyTime.classList.add('message-time');
+                        
+                        const replyNow = new Date();
+                        const replyHours = replyNow.getHours().toString().padStart(2, '0');
+                        const replyMinutes = replyNow.getMinutes().toString().padStart(2, '0');
+                        replyTime.textContent = `${replyHours}:${replyMinutes}`;
+                        
+                        replyDiv.appendChild(replyContent);
+                        replyDiv.appendChild(replyTime);
+                        
+                        messagesContainer.appendChild(replyDiv);
+                        
+                        // Scroll to bottom again
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }, 1000);
+                }
+            });
+            
+            // Allow sending message with Enter key
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    chatSend.click();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
