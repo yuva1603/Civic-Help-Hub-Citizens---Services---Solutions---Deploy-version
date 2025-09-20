@@ -220,7 +220,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100" id="body" style="background-color: white; color: black;">
     <!-- Mobile menu button -->
     <div class="lg:hidden fixed top-4 left-4 z-50">
         <button id="menuToggle" class="p-2 bg-indigo-700 text-white rounded-md">
@@ -741,9 +741,9 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">System Preferences</label>
-                    <select class="form-select mb-2">
-                        <option value="light">Light Theme</option>
-                        <option value="dark">Dark Theme</option>
+                    <select class="form-select mb-2" id="themechange">
+                        <option value="light" id="Theme">Light Theme</option>
+                        <option value="dark" id="Theme1">Dark Theme</option>
                         <option value="auto">Auto (System Preference)</option>
                     </select>
                     <select class="form-select mb-2">
@@ -752,7 +752,7 @@
                         <option value="fr">French</option>
                     </select>
                 </div>
-                <button class="btn-primary w-full">Save Settings</button>
+                <button class="btn-primary w-full" id="btn">Save Settings</button>
             </div>
         </div>
     </div>
@@ -1027,6 +1027,30 @@
                 }
             });
         });
+
+        // Change themes
+
+        const Bright = document.getElementById("Theme").value;
+        const dark = document.getElementById("theme");
+        const bg = document.getElementById("body");
+        const selsub = document.getElementById("btn");
+        const tchange = document.getElementById("themechange");
+
+         
+         selsub.addEventListener('click',()=> {
+            alert('this is click');
+            if (tchange.value == "dark" ){
+            bg.style.backgroundColor = "black";
+            
+        }else {
+            bg.style.backgroundColor = "blue";
+        }})
+
+
+        
+       
+        
+       
     </script>
 </body>
 </html>
